@@ -1,0 +1,35 @@
+version: "3.7"
+
+services:
+  discuss_pg_dev:
+    container_name: discuss_pg_dev
+    image: postgres:alpine
+    environment:
+      POSTGRES_DB: discuss_dev
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      PGDATA: /data/postgres
+    ports:
+      - 5433:5432
+    volumes:
+      - ./postgres:/data/postgres
+    networks:
+      - discuss_dev
+
+  pgadmin:
+    image: dpage/pgadmin4
+    ports:
+      - 5454:5454/tcp
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@discuss.com
+      - PGADMIN_DEFAULT_PASSWORD=password
+      - PGADMIN_LISTEN_PORT=5454
+    networks:
+      - discuss_dev
+
+volumes:
+  postgres:
+
+networks:
+  discuss_dev:
+    driver: bridge
