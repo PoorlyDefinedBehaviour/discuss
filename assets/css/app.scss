@@ -34,3 +34,15 @@
   display: block;
   margin: -1rem 0 2rem;
 }
+
+.form-group {
+  position: relative;
+  margin-bottom: 25px;
+}
+
+.help-block {
+  color: red;
+  text-transform: capitalize;
+  position: absolute;
+  top: 37px;
+}
