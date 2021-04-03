@@ -9,8 +9,8 @@ defmodule Discuss.Topic do
   end
 
   @doc false
-  def changeset(topic, attrs) do
-    topic
+  def changeset(struct \\ %__MODULE__{}, attrs) do
+    struct
     |> cast(attrs, [:title])
     |> validate_required([:title])
   end
