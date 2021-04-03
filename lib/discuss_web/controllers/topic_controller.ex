@@ -13,10 +13,16 @@ defmodule DiscussWeb.TopicController do
     render(conn, "new.html", changeset: changeset)
   end
 
+  @spec create(Plug.Conn.t(), map) :: Plug.Conn.t()
   def create(conn, %{"topic" => topic}) do
     case Topics.create(topic) do
-      {:ok, topic} -> topic
-      {:error, changeset} -> render(conn, "new.html", changeset: changeset)
+      {:ok, _topic} ->
+        conn
+        |> put_flash(:info, "Topic created")
+        |> redirect(to: Routes.topic_path(conn, :index))
+
+      {:error, changeset} ->
+        render(conn, "new.html", changeset: changeset)
     end
   end
 end
