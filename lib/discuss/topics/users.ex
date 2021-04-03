@@ -3,6 +3,13 @@ defmodule Discuss.Users do
   alias Discuss.User
   alias Ecto.Changeset
 
+  def find_by_id(user_id) do
+    case Repo.get(User, user_id) do
+      nil -> {:error, :not_found}
+      user -> {:ok, user}
+    end
+  end
+
   def find_by_email(email) do
     case Repo.get_by(User, email: email) do
       nil -> {:error, :not_found}
