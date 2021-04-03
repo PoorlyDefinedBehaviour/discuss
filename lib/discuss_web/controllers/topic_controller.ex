@@ -43,11 +43,11 @@ defmodule DiscussWeb.TopicController do
         conn
         |> put_flash(:error, "Topic not found")
 
-      {:error, changeset} ->
+      {:error, topic, changeset} ->
         conn
-        |> render(conn, "edit.html", changeset: changeset)
+        |> render(conn, "edit.html", changeset: changeset, topic: topic)
 
-      {:ok, _changeset} ->
+      {:ok, _updated_topic} ->
         conn
         |> put_flash(:info, "Topic updated")
         |> redirect(to: Routes.topic_path(conn, :index))

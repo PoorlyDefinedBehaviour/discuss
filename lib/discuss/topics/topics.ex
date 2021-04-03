@@ -20,7 +20,10 @@ defmodule Discuss.Topics do
 
   def update_by_id(topic_id, new_topic_data) do
     with {:ok, topic} <- find_by_id(topic_id) do
-      Repo.update(Topic.changeset(topic, new_topic_data))
+      case Repo.update(Topic.changeset(topic, new_topic_data)) do
+        {:error, changeset} -> {:error, topic, changeset}
+        {:ok, updated_topic} -> {:ok, updated_topic}
+      end
     end
   end
 end
