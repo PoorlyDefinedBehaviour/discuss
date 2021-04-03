@@ -53,4 +53,18 @@ defmodule DiscussWeb.TopicController do
         |> redirect(to: Routes.topic_path(conn, :index))
     end
   end
+
+  def delete(conn, %{"topic_id" => topic_id}) do
+    case Topics.delete_by_id(topic_id) do
+      {:error, _changeset} ->
+        conn
+        |> put_flash(:error, "It was not possible to delete topic")
+        |> redirect(to: Routes.topic_path(conn, :index))
+
+      {:ok, _topic} ->
+        conn
+        |> put_flash(:info, "Topic deleted")
+        |> redirect(to: Routes.topic_path(conn, :index))
+    end
+  end
 end

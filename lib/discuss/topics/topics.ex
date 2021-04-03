@@ -26,4 +26,10 @@ defmodule Discuss.Topics do
       end
     end
   end
+
+  def delete_by_id(topic_id) do
+    with {:ok, topic} <- find_by_id(topic_id) do
+      Repo.delete(topic)
+    end
+  end
 end

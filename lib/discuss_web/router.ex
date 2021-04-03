@@ -21,6 +21,7 @@ defmodule DiscussWeb.Router do
     post "/topics", TopicController, :create
     get "/topics/:topic_id/edit", TopicController, :edit
     put "/topics/:topic_id", TopicController, :update
+    delete "/topics/:topic_id", TopicController, :delete
   end
 
   # Other scopes may use custom stacks.
