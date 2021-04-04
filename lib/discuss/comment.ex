@@ -2,7 +2,9 @@ defmodule Discuss.Comment do
   use Ecto.Schema
   import Ecto.Changeset
 
-  schema "users" do
+  @derive {Jason.Encoder, only: [:content, :user]}
+
+  schema "comments" do
     field :content, :string, null: false
 
     belongs_to :user, Discuss.User

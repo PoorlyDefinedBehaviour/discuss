@@ -1,15 +1,14 @@
 defmodule Discuss.Topics do
-  alias Discuss.Repo
-  alias Discuss.Topic
+  alias Discuss.{Repo, Topic, Comment}
+  import Ecto.Query
 
   def list_topics() do
     Repo.all(Topic)
   end
 
   def create(user, topic) do
-    changeset = Topic.changeset(%Topic{}, Map.merge(topic, %{"user_id" => user.id}))
-
-    Repo.insert(changeset)
+    Topic.changeset(%Topic{}, Map.merge(topic, %{"user_id" => user.id}))
+    |> Repo.insert()
   end
 
   def find_by_id(topic_id) do
@@ -43,6 +42,23 @@ defmodule Discuss.Topics do
         _other_user_id ->
           {:error, :not_topic_owner}
       end
+    end
+  end
+
+  def create_comment(comment) do
+    Comment.changeset(%Comment{}, comment)
+    |> Repo.insert()
+  end
+
+  def find_topic_with_comments_by_id(topic_id) do
+    query =
+      from topic in Topic,
+        where: topic.id == ^topic_id,
+        preload: [comments: :user]
+
+    case Repo.one(query) do
+      nil -> {:error, :not_found}
+      topic -> {:ok, topic}
     end
   end
 end

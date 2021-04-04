@@ -8,7 +8,7 @@
 // from the params if you are not using authentication.
 import {Socket} from "phoenix"
 
-let socket = new Socket("/socket", {params: {token: window.userToken}})
+const socket = new Socket("/socket", {params: {token: window.userToken}})
 
 // When you connect, you'll often need to authenticate the client.
 // For example, imagine you have an authentication plug, `MyAuth`,
@@ -54,10 +54,41 @@ let socket = new Socket("/socket", {params: {token: window.userToken}})
 // Finally, connect to the socket:
 socket.connect()
 
-// Now that you are connected, you can join channels with a topic:
-let channel = socket.channel("topic:subtopic", {})
-channel.join()
-  .receive("ok", resp => { console.log("Joined successfully", resp) })
-  .receive("error", resp => { console.log("Unable to join", resp) })
+const buildCommentHtml = comment => `
+  <li class="collection-item"> 
+    ${comment.content}
+    <div class="secondary-content">${comment.user.email}</div>
+  </li>
+`
 
-export default socket
+const buildCommentsHtml = comments => 
+  comments.map(buildCommentHtml)
+
+const renderComments = comments => {
+  document.querySelector(".collection").innerHTML = comments.join("")
+}
+
+const renderComment = comment => {
+  document.querySelector(".collection").innerHTML += buildCommentHtml(comment)
+}
+
+// Now that you are connected, you can join channels with a topic:
+const joinChannel = (topicId) => {
+ const channel = socket.channel(`comments:${topicId}`, {})
+
+  channel.join()
+    .receive("ok", ({ comments }) => renderComments(buildCommentsHtml(comments)))
+    .receive("error", resp => { console.log("Unable to join", resp) })
+
+  channel.on(`comments:${topicId}:new`, ({ comment }) => renderComment(comment))
+
+  document.querySelector("button")
+    .addEventListener("click", () => {
+      const { value: content } = document.querySelector("textarea")
+      channel.push("comments:add", { content })
+    })
+}
+
+window.joinChannel = joinChannel
+
+

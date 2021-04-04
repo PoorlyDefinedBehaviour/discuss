@@ -1,1 +1,14 @@
-<%= @topic.title %>
+<h5>
+  <%= @topic.title %>
+</h5>
+
+<div class="input-field">
+  <textarea name="" id="" cols="30" rows="10" class="materialize-textarea"></textarea>
+  <button class="btn">Add Comment</button>
+  <ul class="collection">
+  </ul>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => joinChannel(<%= @topic.id %>))
+</script>
