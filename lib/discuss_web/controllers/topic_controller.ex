@@ -15,8 +15,8 @@ defmodule DiscussWeb.TopicController do
     render(conn, "new.html", changeset: changeset)
   end
 
-  def create(conn, %{"topic" => topic}) do
-    case Topics.create(topic) do
+  def create(%{assigns: %{user: user}} = conn, %{"topic" => topic}) do
+    case Topics.create(user, topic) do
       {:ok, _topic} ->
         conn
         |> put_flash(:info, "Topic created")
@@ -39,15 +39,19 @@ defmodule DiscussWeb.TopicController do
     end
   end
 
-  def update(conn, %{"topic_id" => topic_id, "topic" => topic}) do
-    case Topics.update_by_id(topic_id, topic) do
+  def update(%{assigns: %{user: user}} = conn, %{"topic_id" => topic_id, "topic" => topic}) do
+    case Topics.update_by_id(user, topic_id, topic) do
       {:error, :not_found} ->
         conn
         |> put_flash(:error, "Topic not found")
+        |> redirect(to: Routes.topic_path(conn, :index))
+
+      {:error, :not_topic_owner} ->
+        conn
+        |> redirect(to: Routes.topic_path(conn, :index))
 
       {:error, topic, changeset} ->
-        conn
-        |> render(conn, "edit.html", changeset: changeset, topic: topic)
+        render(conn, "edit.html", changeset: changeset, topic: topic)
 
       {:ok, _updated_topic} ->
         conn
@@ -56,8 +60,11 @@ defmodule DiscussWeb.TopicController do
     end
   end
 
-  def delete(conn, %{"topic_id" => topic_id}) do
-    case Topics.delete_by_id(topic_id) do
+  def delete(%{assigns: %{user: user}} = conn, %{"topic_id" => topic_id}) do
+    case Topics.delete_by_id(user, topic_id) do
+      {:error, :not_topic_owner} ->
+        conn |> redirect(to: Routes.topic_path(conn, :index))
+
       {:error, _changeset} ->
         conn
         |> put_flash(:error, "It was not possible to delete topic")

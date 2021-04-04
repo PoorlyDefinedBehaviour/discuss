@@ -13,7 +13,7 @@ defmodule Discuss.Topic do
   @doc false
   def changeset(struct \\ %__MODULE__{}, attrs \\ %{}) do
     struct
-    |> cast(attrs, [:title])
-    |> validate_required([:title])
+    |> cast(attrs, [:title, :user_id])
+    |> validate_required([:title, :user_id])
   end
 end
