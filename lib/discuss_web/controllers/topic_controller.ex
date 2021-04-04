@@ -15,6 +15,18 @@ defmodule DiscussWeb.TopicController do
     render(conn, "new.html", changeset: changeset)
   end
 
+  def show(conn, %{"topic_id" => topic_id}) do
+    case Topics.find_by_id(topic_id) do
+      {:error, :not_found} ->
+        conn
+        |> put_flash(:error, "Topic not found")
+        |> redirect(to: Routes.topic_path(conn, :index))
+
+      {:ok, topic} ->
+        render(conn, "show.html", topic: topic)
+    end
+  end
+
   def create(%{assigns: %{user: user}} = conn, %{"topic" => topic}) do
     case Topics.create(user, topic) do
       {:ok, _topic} ->

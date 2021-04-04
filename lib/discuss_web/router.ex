@@ -19,6 +19,7 @@ defmodule DiscussWeb.Router do
 
     get "/", TopicController, :index
     get "/topics/new", TopicController, :new
+    get "/topics/:topic_id", TopicController, :show
     post "/topics", TopicController, :create
     get "/topics/:topic_id/edit", TopicController, :edit
     put "/topics/:topic_id", TopicController, :update
