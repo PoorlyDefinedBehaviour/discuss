@@ -1,7 +1,7 @@
 defmodule DiscussWeb.AuthController do
   use DiscussWeb, :controller
 
-  alias Discuss.Users
+  alias Discuss.Accounts
 
   plug Ueberauth
 
@@ -10,7 +10,7 @@ defmodule DiscussWeb.AuthController do
 
     user_params = %{token: auth.credentials.token, email: auth.info.email, provider: "github"}
 
-    case Users.create_or_update(user_params) do
+    case Accounts.create_or_update_user(user_params) do
       {:error, _reason} ->
         conn
         |> put_flash(:error, "Error signing in")

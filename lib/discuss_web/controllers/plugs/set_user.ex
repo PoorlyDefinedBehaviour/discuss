@@ -1,6 +1,6 @@
 defmodule DiscussWeb.Plugs.SetUser do
   import Plug.Conn
-  alias Discuss.Users
+  alias Discuss.Accounts
 
   def init(_params) do
   end
@@ -11,7 +11,7 @@ defmodule DiscussWeb.Plugs.SetUser do
         assign(conn, :user, nil)
 
       user_id ->
-        case Users.find_by_id(user_id) do
+        case Accounts.get_user(user_id) do
           {:error, :not_found} -> assign(conn, :user, nil)
           {:ok, user} -> assign(conn, :user, user)
         end

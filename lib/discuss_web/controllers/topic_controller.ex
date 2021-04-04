@@ -1,12 +1,12 @@
 defmodule DiscussWeb.TopicController do
   use DiscussWeb, :controller
-  alias Discuss.Topic
-  alias Discuss.Topics
+  alias Discuss.Discussions.Topic
+  alias Discuss.Discussions
 
   plug DiscussWeb.Plugs.RequireAuth when action in [:new, :create, :edit, :update, :delete]
 
   def index(conn, _params) do
-    topics = Topics.list_topics()
+    topics = Discussions.list_topics()
     render(conn, "index.html", topics: topics)
   end
 
@@ -16,7 +16,7 @@ defmodule DiscussWeb.TopicController do
   end
 
   def show(conn, %{"topic_id" => topic_id}) do
-    case Topics.find_by_id(topic_id) do
+    case Discussions.get_topic(topic_id) do
       {:error, :not_found} ->
         conn
         |> put_flash(:error, "Topic not found")
@@ -28,7 +28,7 @@ defmodule DiscussWeb.TopicController do
   end
 
   def create(%{assigns: %{user: user}} = conn, %{"topic" => topic}) do
-    case Topics.create(user, topic) do
+    case Discussions.create_topic(user, topic) do
       {:ok, _topic} ->
         conn
         |> put_flash(:info, "Topic created")
@@ -40,7 +40,7 @@ defmodule DiscussWeb.TopicController do
   end
 
   def edit(conn, %{"topic_id" => topic_id}) do
-    case Topics.find_by_id(topic_id) do
+    case Discussions.get_topic(topic_id) do
       {:error, :not_found} ->
         conn
         |> put_flash(:error, "Topic not found")
@@ -52,7 +52,7 @@ defmodule DiscussWeb.TopicController do
   end
 
   def update(%{assigns: %{user: user}} = conn, %{"topic_id" => topic_id, "topic" => topic}) do
-    case Topics.update_by_id(user, topic_id, topic) do
+    case Discussions.update_topic(user, topic_id, topic) do
       {:error, :not_found} ->
         conn
         |> put_flash(:error, "Topic not found")
@@ -73,7 +73,7 @@ defmodule DiscussWeb.TopicController do
   end
 
   def delete(%{assigns: %{user: user}} = conn, %{"topic_id" => topic_id}) do
-    case Topics.delete_by_id(user, topic_id) do
+    case Discussions.delete_topic(user, topic_id) do
       {:error, :not_topic_owner} ->
         conn |> redirect(to: Routes.topic_path(conn, :index))
 

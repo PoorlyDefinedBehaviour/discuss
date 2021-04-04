@@ -1,25 +1,26 @@
-defmodule Discuss.Topics do
-  alias Discuss.{Repo, Topic, Comment}
+defmodule Discuss.Discussions do
+  alias Discuss.Repo
+  alias Discuss.Discussions.{Topic, Comment}
   import Ecto.Query
 
   def list_topics() do
     Repo.all(Topic)
   end
 
-  def create(user, topic) do
+  def create_topic(user, topic) do
     Topic.changeset(%Topic{}, Map.merge(topic, %{"user_id" => user.id}))
     |> Repo.insert()
   end
 
-  def find_by_id(topic_id) do
+  def get_topic(topic_id) do
     case Repo.get(Topic, topic_id) do
       nil -> {:error, :not_found}
       topic -> {:ok, topic}
     end
   end
 
-  def update_by_id(user, topic_id, new_topic_data) do
-    with {:ok, topic} <- find_by_id(topic_id) do
+  def update_topic(user, topic_id, new_topic_data) do
+    with {:ok, topic} <- get_topic(topic_id) do
       case topic.user_id do
         user_id when user_id === user.id ->
           case Repo.update(Topic.changeset(topic, new_topic_data)) do
@@ -33,8 +34,8 @@ defmodule Discuss.Topics do
     end
   end
 
-  def delete_by_id(user, topic_id) do
-    with {:ok, topic} <- find_by_id(topic_id) do
+  def delete_topic(user, topic_id) do
+    with {:ok, topic} <- get_topic(topic_id) do
       case topic.user_id do
         user_id when user_id === user.id ->
           Repo.delete(topic)
@@ -50,7 +51,7 @@ defmodule Discuss.Topics do
     |> Repo.insert()
   end
 
-  def find_topic_with_comments_by_id(topic_id) do
+  def find_topic_with_comments(topic_id) do
     query =
       from topic in Topic,
         where: topic.id == ^topic_id,

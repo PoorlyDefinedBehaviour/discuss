@@ -1,9 +1,9 @@
 defmodule DiscussWeb.CommentsChannel do
   use DiscussWeb, :channel
-  alias Discuss.Topics
+  alias Discuss.Discussions
 
   def join("comments:" <> topic_id, _auth_message, socket) do
-    case Topics.find_topic_with_comments_by_id(String.to_integer(topic_id)) do
+    case Discussions.find_topic_with_comments(String.to_integer(topic_id)) do
       {:error, :not_found} -> {:error, :not_found}
       {:ok, topic} -> {:ok, %{comments: topic.comments}, assign(socket, :topic, topic)}
     end
@@ -16,7 +16,7 @@ defmodule DiscussWeb.CommentsChannel do
       ) do
     comment_params = %{topic_id: topic.id, user_id: user_id, content: content}
 
-    case Topics.create_comment(comment_params) do
+    case Discussions.create_comment(comment_params) do
       {:error, reason} ->
         {:reply, {:error, reason}, socket}
 
