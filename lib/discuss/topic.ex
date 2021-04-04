@@ -6,6 +6,7 @@ defmodule Discuss.Topic do
     field :title, :string, null: false
 
     belongs_to :user, Discuss.User
+    has_many :comments, Discuss.Comment
 
     timestamps()
   end
