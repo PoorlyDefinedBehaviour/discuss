@@ -10,5 +10,6 @@ defmodule Discuss.Repo.Migrations.CreateUsers do
       timestamps()
     end
 
+    create unique_index(:users, [:email, :token])
   end
 end
